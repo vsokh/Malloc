@@ -3,59 +3,92 @@
 /*                                                        :::      ::::::::   */
 /*   malloc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vsokh <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/04 14:58:13 by vsokh             #+#    #+#             */
-/*   Updated: 2021/03/15 18:48:23 by vsokolog         ###   ########.fr       */
+/*   Created: 2021/03/16 15:55:26 by vsokolog          #+#    #+#             */
+/*   Updated: 2021/03/22 14:43:32 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malloc.h"
 
-t_meta_block	*to_meta_block(void *ptr)
-{
-	size_t	shift;
+t_block	*g_first = NULL;
+t_block	*g_last = NULL;
 
-	shift = sizeof(size_t) + sizeof(struct s_meta_block *) + sizeof(int);
-	return (ptr - shift);
+void	free(void *ptr)
+{
+	t_block *p;
+
+	p = g_first;
+	if (ptr == NULL)
+		return ;
+	while (p != NULL)
+	{
+		if ((void*)p + sizeof(t_block) == ptr)
+		{
+			if (p->prev == NULL)
+				g_first = p->next;
+			else
+			{
+				p->prev->next = p->next;
+				munmap((void*)p + sizeof(t_block), p->size - sizeof(t_block));
+			}
+			return ;
+		}
+		p = p->next;
+	}
 }
 
-void			free(void *ptr)
+void	*realloc(void *ptr, size_t size)
 {
-	t_meta_block	*b;
-
-	b = to_meta_block(ptr);
-	print_meta_block(b);
+	return (NULL);
 }
 
-void			malloc(size_t size)
+void	*malloc(size_t size)
 {
-	t_meta_block	*chunk;
-	size_t			z;
+	t_block *b;
+	size_t	asize;
 
-	sz = align4(size) + sizeof(t_meta_block);
-	chunk = mmap(NULL, sz,
-		PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS,
-		0, 0);
-	if (chunk == MAP_FAILED)
-		return (NULL);
-	chunk->size = sz;
-	chunk->next = chunk;
-	chunk->free = 25;
-	return (chunk->data);
+	asize = align4(size) + sizeof(t_block);
+	b = NULL; /* TODO: Add search in cache */
+	if (b == NULL)
+		b = find_block(asize);
+	if (b == NULL)
+	{
+		b = new_block(asize);
+		add_block(b);
+	}
+	return (b == NULL ? NULL : (void *)b + sizeof(t_block));
 }
 
 #ifdef DEBUG
 
-int			main(void)
-{
-	char *p;
-	char *h;
+/*
+** TODO:
+** [] free;
+** [] realloc;
+** [] cache;
+** [] tests
+*/
 
-	p = malloc(5);
-	h = "hello";
-	memcpy(p, h, strlen(h));
-	free(p);
-	return (1);
+int		main(void)
+{
+	const int	allocs = 3;
+	void		*ptrs[allocs];
+	int			bytes[allocs] = {10, 1, 6};
+
+	printf("ALLOCATE: ");
+	for (int i = 0; i < allocs; i++)
+	{
+		ptrs[i] = malloc(bytes[i]);
+		printf("p%d(%db), ", i, bytes[i]);
+	}
+	printf("\n");
+	show_mem();
+
+	printf("\nFREE: p2 \n\n");
+	free(ptrs[2]);
+	show_mem();
+	return (0);
 }
 #endif
