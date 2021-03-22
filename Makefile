@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -shared -undefined dynamic_lookup
 LIBFT = Libft/libft.a
-SRC = src/malloc.c src/utils.c
+SRC = src/malloc.c src/utils.c src/alloc.c
 INC = inc
 
 MD := malloc_debug
@@ -37,7 +37,7 @@ tclean:
 	rm $(MD)
 
 test: $(LIBFT)
-	gcc -D DEBUG $(SRC) -I$(INC) -o $(MD)
+	gcc -g -D DEBUG $(SRC) -I$(INC) -o $(MD)
 
 bonus:
 	@echo "There are no bonuses yet."
