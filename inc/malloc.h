@@ -3,34 +3,39 @@
 /*                                                        :::      ::::::::   */
 /*   malloc.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vsokh <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/04 15:03:26 by vsokh             #+#    #+#             */
-/*   Updated: 2021/03/15 18:43:35 by vsokolog         ###   ########.fr       */
+/*   Created: 2021/03/16 15:55:41 by vsokolog          #+#    #+#             */
+/*   Updated: 2021/03/22 14:36:02 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MALLOC_H
 # define MALLOC_H
 
-# include <limits.h>
 # include <stdio.h>
 # include <unistd.h>
 # include <sys/mman.h>
 # include <sys/resource.h>
-# include <stddef.h>
 # include <string.h>
 
-typedef struct				s_meta_block
+typedef struct		s_block
 {
-	size_t					size;
-	struct s_meta_block		*next;
-	int						free;
-	char					data[1];
-}							t_meta_block;
+	struct s_block	*prev;
+	struct s_block	*next;
+	uint8_t			inuse;
+	size_t			size;
+}					t_block;
 
-void						print_meta_block(t_meta_block *b);
-void						print_constants(void);
-size_t						align4(size_t x);
+extern t_block		*g_first;
+extern t_block		*g_last;
+
+t_block				*find_block(size_t size);
+t_block				*new_block(size_t size);
+void				split_block(t_block *b, size_t size);
+void				add_block(t_block *b);
+
+void				show_mem();
+size_t				align4(size_t x);
 
 #endif
