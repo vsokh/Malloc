@@ -13,7 +13,9 @@ endif
 PREFIX = libft_malloc
 NAME = $(PREFIX)_$(HOSTTYPE).so
 
-all: $(LIBFT)
+all: $(NAME)
+
+$(NAME): $(LIBFT)
 	$(CC) $(CFLAGS) -I$(INC) -o $(NAME) $(LIBFT) $(SRC)
 	ln -sf $(NAME) $(PREFIX).so
 
@@ -30,16 +32,13 @@ fclean: clean
 
 re: fclean all
 
-run: all
-	./$(NAME)
+tclean:
+	rm test/test
 
-dclean:
-	rm $(MD)
+test: $(LIBFT) $(NAME)
+	gcc -L. test/main.c -o test/test -lft_malloc
+	./run.sh ./test/test
 
-debug: $(LIBFT)
-	gcc -g -D DEBUG $(SRC) -I$(INC) -o $(MD)
-
-bonus:
-	@echo "There are no bonuses yet."
+.PHONY: all clean fclean re debug dclean test
 
 
