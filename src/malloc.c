@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 15:55:26 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/03/22 14:43:32 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/03/25 13:25:15 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,36 +15,75 @@
 t_block	*g_first = NULL;
 t_block	*g_last = NULL;
 
-void	free(void *ptr)
+/*
+**	Description:
+**		Splits one block up to two,
+**		where the first is allocated and the second is freed.
+**	Params:
+**		new_size - size for the allocated block.
+*/
+static t_block	*split_block(t_block *b, size_t new_size)
 {
-	t_block *p;
+	t_block	*f;
 
-	p = g_first;
-	if (ptr == NULL)
-		return ;
-	while (p != NULL)
+	f = (void *)b + new_size;
+	f->prev = b;
+	f->next = b->next;
+	f->inuse = 0;
+	f->size = b->size - new_size;
+	b->next = f;
+	b->size = new_size;
+	return (b);
+}
+
+static void		add_block(t_block *b)
+{
+	if (g_first == NULL)
+		g_first = b;
+	else
 	{
-		if ((void*)p + sizeof(t_block) == ptr)
-		{
-			if (p->prev == NULL)
-				g_first = p->next;
-			else
-			{
-				p->prev->next = p->next;
-				munmap((void*)p + sizeof(t_block), p->size - sizeof(t_block));
-			}
-			return ;
-		}
-		p = p->next;
+		g_last->next = b;
+		b->prev = g_last;
 	}
+	g_last = b->next == NULL ? b : b->next;
 }
 
-void	*realloc(void *ptr, size_t size)
+static t_block	*find_block(size_t size)
 {
-	return (NULL);
+	t_block *b;
+
+	b = g_first;
+	while (b != NULL)
+	{
+		if (b->inuse == 0 && b->size >= size)
+		{
+			b->inuse = 1;
+			break ;
+		}
+		b = b->next;
+	}
+	return (b);
 }
 
-void	*malloc(size_t size)
+static t_block	*new_block(size_t size)
+{
+	t_block		*b;
+	size_t		apsize;
+
+	apsize = align_to_page(size + sizeof(t_block));
+	b = mmap(NULL, apsize,
+		PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS,
+		0, 0);
+	if (b == MAP_FAILED)
+		return (NULL);
+	b->prev = NULL;
+	b->next = NULL;
+	b->inuse = 1;
+	b->size = apsize;
+	return (b);
+}
+
+static void		*malloc(size_t size)
 {
 	t_block *b;
 	size_t	asize;
@@ -54,41 +93,22 @@ void	*malloc(size_t size)
 	if (b == NULL)
 		b = find_block(asize);
 	if (b == NULL)
-	{
 		b = new_block(asize);
-		add_block(b);
-	}
-	return (b == NULL ? NULL : (void *)b + sizeof(t_block));
+	if (b == NULL)
+		return (NULL);
+	if (b->size > asize)
+		b = split_block(b, asize);
+	add_block(b);
+	return ((void *)b + sizeof(t_block));
 }
 
 #ifdef DEBUG
-
-/*
-** TODO:
-** [] free;
-** [] realloc;
-** [] cache;
-** [] tests
-*/
 
 int		main(void)
 {
 	const int	allocs = 3;
 	void		*ptrs[allocs];
-	int			bytes[allocs] = {10, 1, 6};
-
-	printf("ALLOCATE: ");
-	for (int i = 0; i < allocs; i++)
-	{
-		ptrs[i] = malloc(bytes[i]);
-		printf("p%d(%db), ", i, bytes[i]);
-	}
-	printf("\n");
-	show_mem();
-
-	printf("\nFREE: p2 \n\n");
-	free(ptrs[2]);
-	show_mem();
+	int			bytes[allocs] = {3000, 3000, 5000};
 	return (0);
 }
 #endif
