@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 15:55:26 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/03/25 13:25:15 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/03/25 16:30:26 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ t_block	*g_last = NULL;
 **	Params:
 **		new_size - size for the allocated block.
 */
+
 static t_block	*split_block(t_block *b, size_t new_size)
 {
 	t_block	*f;
@@ -83,13 +84,13 @@ static t_block	*new_block(size_t size)
 	return (b);
 }
 
-static void		*malloc(size_t size)
+void		*malloc(size_t size)
 {
 	t_block *b;
 	size_t	asize;
 
 	asize = align4(size) + sizeof(t_block);
-	b = NULL; /* TODO: Add search in cache */
+	b = NULL;
 	if (b == NULL)
 		b = find_block(asize);
 	if (b == NULL)
@@ -101,14 +102,3 @@ static void		*malloc(size_t size)
 	add_block(b);
 	return ((void *)b + sizeof(t_block));
 }
-
-#ifdef DEBUG
-
-int		main(void)
-{
-	const int	allocs = 3;
-	void		*ptrs[allocs];
-	int			bytes[allocs] = {3000, 3000, 5000};
-	return (0);
-}
-#endif
