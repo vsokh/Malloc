@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/22 15:32:10 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/03/25 14:51:19 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/03/25 15:09:30 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ static void	merge_right_if_can(t_block *b)
 		return ;
 	b->size += b->next->size;
 	b->next = b->next->next;
+	if (b->next->next != NULL)
+		b->next->next->prev = b;
 }
 
 static void	reclaim_if_can(t_block *b)
@@ -52,7 +54,7 @@ static void	reclaim_if_can(t_block *b)
 	}
 }
 
-void	free(void *ptr)
+void		free(void *ptr)
 {
 	t_block *b;
 
