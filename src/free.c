@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/22 15:32:10 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/03/25 15:09:30 by vsokolog         ###   ########.fr       */
+/*   Created: 2021/03/25 18:40:00 by vsokolog          #+#    #+#             */
+/*   Updated: 2021/03/25 18:40:01 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,19 +39,18 @@ static void	merge_right_if_can(t_block *b)
 
 static void	reclaim_if_can(t_block *b)
 {
-	if (b->size % getpagesize() == 0)
+	if (b->size % getpagesize() != 0)
+		return ;
+	if (b->prev != NULL)
+		b->prev->next = b->next;
+	if (b->next != NULL)
+		b->next->prev = b->prev;
+	if (b->next == NULL && b->prev == NULL)
 	{
-		if (b->prev != NULL)
-			b->prev->next = b->next;
-		if (b->next != NULL)
-			b->next->prev = b->prev;
-		if (b->next == NULL && b->prev == NULL)
-		{
-			g_first = NULL;
-			g_last = NULL;
-		}
-		munmap(b, b->size);
+		g_first = NULL;
+		g_last = NULL;
 	}
+	munmap(b, b->size);
 }
 
 void		free(void *ptr)

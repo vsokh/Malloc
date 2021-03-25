@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/16 15:55:26 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/03/25 16:30:26 by vsokolog         ###   ########.fr       */
+/*   Created: 2021/03/25 18:39:49 by vsokolog          #+#    #+#             */
+/*   Updated: 2021/03/25 18:39:50 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ static t_block	*new_block(size_t size)
 	apsize = align_to_page(size + sizeof(t_block));
 	b = mmap(NULL, apsize,
 		PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS,
-		0, 0);
+		-1, 0);
 	if (b == MAP_FAILED)
 		return (NULL);
 	b->prev = NULL;
