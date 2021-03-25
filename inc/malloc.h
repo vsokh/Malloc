@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 15:55:41 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/03/25 14:58:16 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/03/25 15:48:26 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@ typedef struct		s_block
 extern t_block		*g_first;
 extern t_block		*g_last;
 
-void				print_block(t_block *b);
+void				*malloc(size_t size);
+void				free(void* ptr);
+
 size_t				align4(size_t x);
 size_t				align_to_page(size_t x);
 void				show_mem(void);
