@@ -1,8 +1,11 @@
 #include "../inc/malloc.h"
 
-int main(void)
+/* Double free for tiny zone */
+
+int main()
 {
 	void *p = malloc(1);
-	show_mem();
+	free(p);
+	free(p);
 	return 0;
 }
