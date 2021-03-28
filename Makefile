@@ -6,12 +6,12 @@
 #    By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/25 18:38:50 by vsokolog          #+#    #+#              #
-#    Updated: 2021/03/25 18:38:50 by vsokolog         ###   ########.fr        #
+#    Updated: 2021/03/28 09:22:33 by vsokolog         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 LDFLAGS = -shared
 LIBFT = libft/libft.a
 
@@ -64,8 +64,12 @@ tclean:
 
 test: all
 	@echo ${YELLOW}[Checking $(NAME)]${NOCOLOR}
-	gcc -L. -lft_malloc test/main.c -o test/test 
-	./run.sh ./test/test
+	@$(CC) $(CFLAGS) -L. -lft_malloc -D TEST test/main.c -o test/test 
+	@./run.sh ./test/test
+
+debug: all
+	@$(CC) $(CFLAGS) -L. -lft_malloc -D DEBUG test/main.c -o test/test 
+	@./run.sh ./test/test
 
 norm:
 	@echo ${YELLOW}[Norminetting $(NAME)]${NOCOLOR}
