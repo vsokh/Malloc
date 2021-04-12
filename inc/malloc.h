@@ -80,4 +80,6 @@ extern t_arena		g_arena;
 void				*malloc(size_t size);
 void				free(void *ptr);
 
-void				show_mem(void);
+void				show_alloc_mem(void);
+
+#endif
