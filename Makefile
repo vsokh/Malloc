@@ -6,12 +6,12 @@
 #    By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/25 18:38:50 by vsokolog          #+#    #+#              #
-#    Updated: 2021/04/07 15:50:16 by vsokolog         ###   ########.fr        #
+#    Updated: 2021/04/18 13:00:52 by vsokolog         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g -fPIC
 LDFLAGS = -shared
 LIBFT = libft/libft.a
 
@@ -19,7 +19,7 @@ INCL = -I inc -I libft/inc
 DEPS = inc/malloc.h libft/inc/libft.h
 SRCDIR = src
 OBJDIR = obj
-SRC = malloc.c utils.c free.c
+SRC = malloc.c free.c realloc.c utils.c tinysmall.c large.c
 OBJ = $(addprefix $(OBJDIR)/, $(SRC:.c=.o))
 
 ifeq ($(HOSTTYPE),)
