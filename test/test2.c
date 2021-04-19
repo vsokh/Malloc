@@ -11,7 +11,7 @@ int main()
 			return 1;
 		i++;
 	}
-#ifdef M
+#ifdef DEBUG
 	show_alloc_mem();
 #endif
 

@@ -6,7 +6,7 @@ int main()
 {
 	if (malloc(4 * K) == NULL)
 		return 1;
-#ifdef M
+#ifdef DEBUG
 	show_alloc_mem();
 #endif
 

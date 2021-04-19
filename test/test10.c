@@ -14,7 +14,7 @@ int main()
 		free(p);
 		i++;
 	}
-#ifdef M
+#ifdef DEBUG
 	show_alloc_mem();
 #endif
 

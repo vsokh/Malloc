@@ -7,7 +7,7 @@ int main()
 	if (p == NULL)
 		return 1;
 	free(p);
-#ifdef M
+#ifdef DEBUG
 	show_alloc_mem();
 #endif
 

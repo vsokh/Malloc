@@ -19,9 +19,8 @@ int main()
 	{
 		free(p[i]);
 		i++;
-		//printf("K*t: %d i: %d\n", K*t,i);
 	}
-#ifdef M
+#ifdef DEBUG
 	show_alloc_mem();
 #endif
 	return 0;

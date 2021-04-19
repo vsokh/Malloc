@@ -22,6 +22,7 @@ int main()
 	addr3 = (char*)realloc(addr1, 128*M);
 	addr3[127*M] = 42;
 	print(addr3);
+	show_alloc_mem();
 	return (0);
 }
 
