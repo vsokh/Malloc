@@ -1,8 +1,10 @@
 .*.swp
-libft/*.[ao]
 *.o
-a.out
 *.dSYM
+test/*.dSYM
+
+a.out
 .DS_Store
+
 .todo
 tags
