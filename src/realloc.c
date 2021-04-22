@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:15 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/19 15:15:03 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/22 16:26:31 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ static t_meta_data	*search_in_zone(t_zone *zone, void *ptr)
 
 	t_meta_data *head = NULL;
 	t_meta_data *block = NULL;
-	for (size_t block_idx = 0; block_idx < zone->block_num; block_idx++)
+	for (size_t head_idx = 0; head_idx < zone->heads_num; head_idx++)
 	{
-		head = block_head_at(zone, block_idx);
+		head = head_at(zone, head_idx);
 		block = search_by_ptr(head, ptr);
 		if (block)
 			return block;
@@ -45,9 +45,24 @@ static t_meta_data	*search_in_zone(t_zone *zone, void *ptr)
 	return NULL;
 }
 
-void				*move_mem(t_meta_data *block, size_t size)
+static void			*ft_memcpy(void *dest, const void *src, size_t n)
 {
-	if (!block)
+	size_t i;
+
+	i = 0;
+	if (dest == src)
+		return (NULL);
+	while (i < n)
+	{
+		((char *)dest)[i] = ((char *)src)[i];
+		i++;
+	}
+	return (dest);
+}
+
+static void			*move_block(t_meta_data *block, size_t size)
+{
+	if (!block || !block->inuse)
 		return NULL;
 
 	void *src_ptr = block2mem(block);
@@ -56,10 +71,7 @@ void				*move_mem(t_meta_data *block, size_t size)
 	{
 		dst_ptr = malloc(size);
 		if (!dst_ptr)
-		{
-			errno = ENOMEM;
 			return NULL;
-		}
 
 		size_t src_size = datasize(block);
 		ft_memcpy(dst_ptr, src_ptr, src_size);
@@ -76,15 +88,13 @@ void				*realloc(void *ptr, size_t size)
 	t_meta_data *block = NULL;
 	if (pthread_mutex_lock(&g_mtx) == 0)
 	{
-		block = search_in_zone(g_arena.tiny_zone, ptr);
+		block = search_in_zone(&g_zones[TINY], ptr);
 		if (!block)
-			block = search_in_zone(g_arena.small_zone, ptr);
+			block = search_in_zone(&g_zones[SMALL], ptr);
 		if (!block)
-			block = search_by_ptr(g_arena.large_zone, ptr);
-		if (!block || !block->inuse)
-			errno = ENOMEM;
+			block = search_in_zone(&g_zones[LARGE], ptr);
 		pthread_mutex_unlock(&g_mtx);
 	}
-	return move_mem(block, size);
+	return move_block(block, size);
 }
 

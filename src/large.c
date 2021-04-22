@@ -19,22 +19,19 @@ static void			add_block(t_meta_data **head, t_meta_data *block)
 	block->next = tmp_head;
 }
 
-int					try_alloc_large_block(void **mem, size_t size)
+void				*try_alloc_large_block(size_t size)
 {
 	size_t pages = align2page(size);
-	t_meta_data *block = NULL;
-	int err = alloc_mem((void**)&block, pages);
-	if (err)
-		return err;
+	t_meta_data *block = alloc_mem(pages);
+	if (!block)
+		return NULL;
 
 	block->inuse = 1;
 	block->size = pages;
-	add_block(&g_arena.large_zone, block);
-	*mem = block2mem(block);
+	add_block(&g_zones[LARGE].blocks, block);
 
-	return 0;
+	return block2mem(block);
 }
-
 
 static void			remove_block(t_meta_data *block)
 {
@@ -44,12 +41,12 @@ static void			remove_block(t_meta_data *block)
 	block->prev->next = block->next;
 	block->next->prev = block->prev;
 
-	if (g_arena.large_zone == block)
+	if (g_zones[LARGE].blocks == block)
 	{
 		if (block->next != block)
-			g_arena.large_zone = block->next;
+			g_zones[LARGE].blocks = block->next;
 		else
-			g_arena.large_zone = NULL;
+			g_zones[LARGE].blocks = NULL;
 	}
 }
 
@@ -69,16 +66,15 @@ static t_meta_data	*search_by_ptr(t_meta_data *head, void *ptr)
 	return NULL;
 }
 
-int					try_free_large_block(void **ptr)
+void				try_free_large_block(void *ptr)
 {
-	t_meta_data *block = search_by_ptr(g_arena.large_zone, *ptr);
+	t_meta_data *block = search_by_ptr(g_zones[LARGE].blocks, ptr);
+	if (!block)
+		return ;
 	if (block && !block->inuse)
-		return 1;
+		return ;
 
 	remove_block(block);
 	munmap(block, block->size);
-	*ptr = NULL;
-
-	return 0;
 }
 

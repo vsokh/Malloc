@@ -1,27 +1,22 @@
 #include "malloc.h"
 
-static int			new_zone(t_zone **zone, size_t zone_size, size_t block_size, size_t block_num)
+static int			init_zone(t_zone *zone)
 {
-	int err = alloc_mem((void**)zone, zone_size);
-	if (err)
-		return err;
-
-	t_zone *tmp_zone = *zone;
-	tmp_zone->block_size = block_size;
-	tmp_zone->block_num = block_num;
+	if (!zone)
+		return 0;
+	zone->blocks = alloc_mem(zone->free_space);
 
 	t_meta_data *head = NULL;
-	for (size_t block_idx = 0; block_idx < tmp_zone->block_num; block_idx++)
+	for (size_t head_idx = 0; head_idx < zone->heads_num; head_idx++)
 	{
-		head = block_head_at(tmp_zone, block_idx);
+		head = head_at(zone, head_idx);
 		head->next = head;
 		head->prev = head;
-		head->size = tmp_zone->block_size;
+		head->size = zone->block_size;
 		head->inuse = 0;
 	}
-	return 0;
+	return 1;
 }
-
 
 static void			split_block(t_meta_data *block, size_t new_size)
 {
@@ -53,55 +48,49 @@ static t_meta_data	*search_by_size(t_meta_data *head, size_t size)
 	return NULL;
 }
 
-static t_meta_data 	*try_alloc(t_zone *zone, size_t size)
+static void 		*try_alloc(t_zone *zone, size_t size)
 {
 	if (!zone)
 		return NULL;
 
 	t_meta_data *head = NULL;
 	t_meta_data *curr = NULL;
-	for (size_t block_idx = 0; block_idx < zone->block_num; block_idx++)
+	for (size_t head_idx = 0; head_idx < zone->heads_num; head_idx++)
 	{
-		head = block_head_at(zone, block_idx);
+		head = head_at(zone, head_idx);
 		curr = search_by_size(head, size);
 		if (curr)
 		{
 			if (datasize(curr) > size)
 				split_block(curr, size);
 			curr->inuse = 1;
-			return curr;
+			zone->free_space -= curr->size;
+			return block2mem(curr);
 		}
 	}
 	return NULL;
 }
 
-int					try_alloc_tinysmall_block(void **mem, size_t size)
+void				*try_alloc_tinysmall_block(size_t size)
 {
-	int err = 0;
-	if (!g_arena.tiny_zone)
-		err = new_zone(&g_arena.tiny_zone, TINY_ZONE_SIZE, TINY_BLOCK_SIZE, TINY_BLOCKS_NUM);
-	if (err)
-		return err;
+	void *mem = NULL;
 
-	t_meta_data *block = try_alloc(g_arena.tiny_zone, size);
-	if (block)
+	if (size <= TINY_BLOCK_SIZE)
 	{
-		*mem = block2mem(block);
-		return 0;
+		if (!g_zones[TINY].blocks)
+			if (init_zone(&g_zones[TINY]))
+				if (g_zones[TINY].free_space >= size)
+					mem = try_alloc(&g_zones[TINY], size);
 	}
-
-	if (!g_arena.small_zone)
-		err = new_zone(&g_arena.small_zone, SMALL_ZONE_SIZE, SMALL_BLOCK_SIZE, SMALL_BLOCKS_NUM);
-	if (err)
-		return err;
-
-	block = try_alloc(g_arena.small_zone, size);
-	if (block)
-		*mem = block2mem(block);
-
-	return 0;
+	if (!mem && size <= SMALL_BLOCK_SIZE)
+	{
+		if (!g_zones[SMALL].blocks)
+			if (init_zone(&g_zones[SMALL]))
+				if (g_zones[SMALL].free_space >= size)
+					mem = try_alloc(&g_zones[SMALL], size);
+	}
+	return mem;
 }
-
 
 static void			merge_block(t_meta_data *head, t_meta_data *block)
 {
@@ -145,35 +134,53 @@ static t_meta_data	*search_by_ptr(t_meta_data *head, void *ptr)
 	return NULL;
 }
 
-static int			try_free(t_zone *zone, void **ptr)
+static int			try_free(t_zone *zone, void *ptr)
 {
 	if (!zone)
 		return 0;
 
 	t_meta_data *head = NULL;
 	t_meta_data *curr = NULL;
-	for (size_t block_idx = 0; block_idx < zone->block_num; block_idx++)
+	for (size_t head_idx = 0; head_idx < zone->heads_num; head_idx++)
 	{
-		head = block_head_at(zone, block_idx);
-		curr = search_by_ptr(head, *ptr);
+		head = head_at(zone, head_idx);
+		curr = search_by_ptr(head, ptr);
 		if (curr)
 		{
 			if (!curr->inuse)
-				return 1;
+				break ;
 
+			zone->free_space += curr->size;
 			merge_block(head, curr);
-			*ptr = NULL;
-			break ;
+			return 1;
 		}
 	}
 	return 0;
 }
 
-int					try_free_tinysmall_block(void **ptr)
+int					try_free_tinysmall_block(void *ptr)
 {
-	int err = try_free(g_arena.tiny_zone, ptr);
-	if (err)
-		return err;
-	return try_free(g_arena.small_zone, ptr);
+	int success = try_free(&g_zones[TINY], ptr);
+	if (success)
+	{
+		if (g_zones[TINY].free_space == TINY_ZONE_SIZE)
+		{
+			munmap(g_zones[TINY].blocks, g_zones[TINY].free_space);
+			g_zones[TINY].blocks = NULL;
+		}
+		return success;
+	}
+
+	success = try_free(&g_zones[SMALL], ptr);
+	if (success)
+	{
+		if (g_zones[SMALL].free_space == SMALL_ZONE_SIZE)
+		{
+			munmap(g_zones[SMALL].blocks, g_zones[SMALL].free_space);
+			g_zones[SMALL].blocks = NULL;
+		}
+	}
+
+	return success;
 }
 
