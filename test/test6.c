@@ -1,19 +1,20 @@
+#include <unistd.h>
+#include <string.h>
 #include "../inc/malloc.h"
 
-# define K 1024
+void print(char *s)
+{
+	write(1, s, strlen(s));
+}
 
 int main()
 {
-	int i = 0;
-	const int k = 5;
-	while (i < K*k)
-	{
-		if (malloc(5) == NULL)
-			return 1;
-		i++;
-	}
-#ifdef DEBUG
+	char *addr;
+
+	addr = malloc(16);
+	free(NULL);
+	free((void *)addr + 5);
+	if (realloc((void *)addr + 5, 10) == NULL)
+		print("Bonjours\n");
 	show_alloc_mem();
-#endif
-	return 0;
 }

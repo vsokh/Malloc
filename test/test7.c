@@ -1,15 +1,13 @@
 #include "../inc/malloc.h"
 
-/* A simple one call test for tiny zone and then free */
 int main()
 {
-	void *p = malloc(1);
-	if (p == NULL)
-		return 1;
-	free(p);
-#ifdef DEBUG
+	(void)malloc(1024);
+	(void)malloc(1024 * 32);
+	(void)malloc(1024 * 1024);
+	(void)malloc(1024 * 1024 * 16);
+	(void)malloc(1024 * 1024 * 128);
 	show_alloc_mem();
-#endif
 
-	return 0;
+	return (0);
 }

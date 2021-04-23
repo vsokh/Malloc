@@ -1,19 +1,18 @@
 #include "../inc/malloc.h"
 
-/* A simple loop call test for tiny zone. */
-
 int main()
 {
-	int i = 0;
-	while (i < 5)
+	int i;
+	char *addr;
+
+	i = 0;
+	while (i < 1024)
 	{
-		if (malloc(1) == NULL)
-			return 1;
+		addr = (char*)malloc(1024);
+		addr[0] = 42;
+		free(addr);
 		i++;
 	}
-#ifdef DEBUG
 	show_alloc_mem();
-#endif
-
-	return 0;
+	return (0);
 }

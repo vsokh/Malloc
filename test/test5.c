@@ -1,15 +1,19 @@
+#include <unistd.h>
+#include <string.h>
 #include "../inc/malloc.h"
 
-/* A simple one 4KB allocation */
-# define K 1024
-int main()
+void print(char *s)
 {
-	if (malloc(4 * K) == NULL)
-		return 1;
-#ifdef DEBUG
-	show_alloc_mem();
-#endif
-
-	return 0;
+	write(1, s, strlen(s));
 }
 
+int main()
+{
+	char *addr;
+
+	addr = malloc(42);
+	free(NULL);
+	free((void *)addr + 5);
+	if (realloc((void *)addr + 5, 0) == NULL)
+		print("Bonjours\n");
+}

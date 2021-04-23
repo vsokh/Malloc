@@ -1,22 +1,28 @@
+#include <strings.h>
 #include "../inc/malloc.h"
 
-/* An allocation for 2^20 bytes */
-# define K (int)(1024-sizeof(t_meta_data))
+#define M (1024 * 1024)
+
+void print(char *s)
+{
+	write(1, s, strlen(s));
+}
+
+
 int main()
 {
-	int i = 0;
-	while (i < K)
-	{
-		if (malloc(K) == NULL)
-		{
-			show_alloc_mem();
-			return 1;
-		}
-		i++;
-	}
-#ifdef DEBUG
-	show_alloc_mem();
-#endif
+	char *addr1;
+	char *addr2;
+	char *addr3;
 
-	return 0;
+	addr1 = (char*)malloc(16*M);
+	strcpy(addr1, "Bonjours\n");
+	print(addr1);
+	addr2 = (char*)malloc(16*M);
+	addr3 = (char*)realloc(addr1, 128*M);
+	addr3[127*M] = 42;
+	print(addr3);
+	show_alloc_mem();
+	return (0);
 }
+

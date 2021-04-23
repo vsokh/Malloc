@@ -1,15 +1,24 @@
+#include <strings.h>
 #include "../inc/malloc.h"
 
-/* A simple one KB allocation for small zone */
-# define K 1024-sizeof(t_meta_data)
+#define M (1024 * 1024)
+
+void print(char *s)
+{
+	write(1, s, strlen(s));
+}
 
 int main()
 {
-	if (malloc(K) == NULL)
-		return 1;
-#ifdef DEBUG
-	show_alloc_mem();
-#endif
+	char *addr1;
+	char *addr3;
 
-	return 0;
+	addr1 = (char*)malloc(16*M);
+	strcpy(addr1, "Bonjours\n");
+	print(addr1);
+	addr3 = (char*)realloc(addr1, 128*M);
+	addr3[127*M] = 42;
+	print(addr3);
+	show_alloc_mem();
+	return (0);
 }
