@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:30 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/22 15:48:42 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/22 20:36:46 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 # define MALLOC_H
 
 # include <sys/mman.h>
-
-# include <errno.h>
 
 # include <pthread.h>
 
@@ -47,11 +45,11 @@
 # define align2page(x)				\
 	((x) ? (_align(x, PAGE_SIZE)) : PAGE_SIZE)
 
-# define align2minsize(x)			\
-	((x) ? (_align(x, MIN_SIZE)) : MIN_SIZE)
+# define minsize(x)					\
+	((x < MIN_SIZE) ? MIN_SIZE : x)
 
 # define req2size(x)				\
-	(align2minsize(x) + BLOCK_METADATA_SIZE)
+	(minsize(x) + BLOCK_METADATA_SIZE)
 
 # define head_at(zone, idx)			\
 	((zone->blocks) ? ((void*)((char*)(zone)->blocks + (zone)->block_size * idx)) : NULL)
@@ -95,6 +93,7 @@ void					free(void *ptr);
 void					*malloc(size_t size);
 void					*realloc(void *ptr, size_t size);
 
+
 void					*alloc_mem(size_t size);
 
 void					*try_alloc_tinysmall_block(size_t size);
@@ -103,7 +102,13 @@ int						try_free_tinysmall_block(void *ptr);
 void					*try_alloc_large_block(size_t size);
 void					try_free_large_block(void *ptr);
 
+
 void					show_alloc_mem(void);
-void					print_block(t_meta_data *block);
+
+
+void					ft_putstr(char const *s);
+int						ft_strlen(char const *s);
+void					ft_strcpy(char *dest, char const *src);
+void					*ft_memcpy(void *dest, const void *src, size_t n);
 
 #endif

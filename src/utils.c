@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:08 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/22 16:27:08 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/23 15:21:58 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,42 @@ static void		ft_putnbr(size_t n)
 		ft_putchar(n + '0');
 }
 
-static void		ft_putstr(char const *s)
+void			*ft_memcpy(void *dest, const void *src, size_t n)
+{
+	size_t i;
+
+	i = 0;
+	if (dest == src || src == NULL || dest == NULL)
+		return (NULL);
+	while (i < n)
+	{
+		((char *)dest)[i] = ((char *)src)[i];
+		i++;
+	}
+	return (dest);
+}
+
+int				ft_strlen(char const *s)
 {
 	if (s == NULL)
-		return ;
+		return 0;
+
 	int len = 0;
 	while (s[len])
 		len++;
-	write(1, s, len);
+	return len;
+}
+
+void			ft_strcpy(char *dest, char const *src)
+{
+	ft_memcpy(dest, src, ft_strlen(src));
+}
+
+void			ft_putstr(char const *s)
+{
+	if (s == NULL)
+		return ;
+	write(1, s, ft_strlen(s));
 }
 
 static void		ft_putnbr16(unsigned long long n)
@@ -61,55 +89,6 @@ static void		ft_putnbr16(unsigned long long n)
 		write(1, &a[k], b-k);
 }
 
-static size_t	print_blocks(t_meta_data *head)
-{
-	if (!head)
-		return 0;
-
-	size_t bytes = 0;
-	t_meta_data *block = head;
-	do {
-		if (block->inuse)
-		{
-			uintptr_t start = (uintptr_t)block2mem(block);
-			uintptr_t end = (uintptr_t)(void*)((char*)block2mem(block) + datasize(block));
-			uintptr_t allocated = datasize(block);
-			ft_putnbr16(start);
-			ft_putstr(" - ");
-			ft_putnbr16(end);
-			ft_putstr(" : ");
-			ft_putnbr(allocated);
-			ft_putstr("\n");
-			bytes += datasize(block);
-		}
-		block = block->next;
-	} while (block != head);
-	return bytes;
-}
-
-static void		print_head(t_zone *zone)
-{
-	ft_putstr(zone->name);
-	ft_putstr(" : ");
-	ft_putnbr16((uintptr_t)zone->blocks);
-	ft_putstr("\n");
-}
-
-static size_t	print_zone(t_zone *zone)
-{
-	if (!zone)
-		return 0;
-
-	size_t bytes = 0;
-	t_meta_data *head = NULL;
-	for (size_t head_idx = 0; head_idx < zone->heads_num; head_idx++)
-	{
-		head = head_at(zone, head_idx);
-		bytes += print_blocks(head);
-	}
-	return bytes;
-}
-
 static int		cmp(void *a, void *b)
 {
 	return ((t_zone*)a)->blocks > ((t_zone*)b)->blocks;
@@ -129,6 +108,55 @@ static void		sortp(void **a, int n, int (*cmp)(void *a, void *b))
 			}
 		}
 	}
+}
+
+static void		print_head(t_zone *zone)
+{
+	ft_putstr(zone->name);
+	ft_putstr(" : ");
+	ft_putnbr16((uintptr_t)zone->blocks);
+	ft_putstr("\n");
+}
+
+static size_t	print_blocks(t_meta_data *head)
+{
+	if (!head)
+		return 0;
+
+	size_t bytes = 0;
+	t_meta_data *block = head;
+	do {
+		if (block->inuse)
+		{
+			size_t allocated = datasize(block);
+			uintptr_t start = (uintptr_t)block2mem(block);
+			uintptr_t end = (uintptr_t)(void*)((char*)block2mem(block) + allocated);
+			ft_putnbr16(start);
+			ft_putstr(" - ");
+			ft_putnbr16(end);
+			ft_putstr(" : ");
+			ft_putnbr(allocated);
+			ft_putstr("\n");
+			bytes += allocated;
+		}
+		block = block->next;
+	} while (block != head);
+	return bytes;
+}
+
+static size_t	print_zone(t_zone *zone)
+{
+	if (!zone)
+		return 0;
+
+	size_t bytes = 0;
+	t_meta_data *head = NULL;
+	for (size_t head_idx = 0; head_idx < zone->heads_num; head_idx++)
+	{
+		head = head_at(zone, head_idx);
+		bytes += print_blocks(head);
+	}
+	return bytes;
 }
 
 void			show_alloc_mem(void)

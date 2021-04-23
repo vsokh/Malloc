@@ -6,12 +6,13 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/16 14:55:54 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/22 13:34:42 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/23 16:20:15 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malloc.h"
 
+#include <stdio.h>
 static void	try_free_block(void *ptr)
 {
 	int success = try_free_tinysmall_block(ptr);

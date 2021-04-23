@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:15 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/22 16:26:31 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/22 20:33:19 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,21 +45,6 @@ static t_meta_data	*search_in_zone(t_zone *zone, void *ptr)
 	return NULL;
 }
 
-static void			*ft_memcpy(void *dest, const void *src, size_t n)
-{
-	size_t i;
-
-	i = 0;
-	if (dest == src)
-		return (NULL);
-	while (i < n)
-	{
-		((char *)dest)[i] = ((char *)src)[i];
-		i++;
-	}
-	return (dest);
-}
-
 static void			*move_block(t_meta_data *block, size_t size)
 {
 	if (!block || !block->inuse)
@@ -67,7 +52,7 @@ static void			*move_block(t_meta_data *block, size_t size)
 
 	void *src_ptr = block2mem(block);
 	void *dst_ptr = src_ptr;
-	if (datasize(block) < align2minsize(size))
+	if (datasize(block) < size)
 	{
 		dst_ptr = malloc(size);
 		if (!dst_ptr)

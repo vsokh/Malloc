@@ -1,9 +1,10 @@
 #include "malloc.h"
 
-static int			init_zone(t_zone *zone)
+static void			init_zone(t_zone *zone)
 {
-	if (!zone)
-		return 0;
+	if (!zone || zone->blocks)
+		return ;
+
 	zone->blocks = alloc_mem(zone->free_space);
 
 	t_meta_data *head = NULL;
@@ -15,7 +16,6 @@ static int			init_zone(t_zone *zone)
 		head->size = zone->block_size;
 		head->inuse = 0;
 	}
-	return 1;
 }
 
 static void			split_block(t_meta_data *block, size_t new_size)
@@ -52,6 +52,8 @@ static void 		*try_alloc(t_zone *zone, size_t size)
 {
 	if (!zone)
 		return NULL;
+	if (zone->free_space < size)
+		return NULL;
 
 	t_meta_data *head = NULL;
 	t_meta_data *curr = NULL;
@@ -77,17 +79,13 @@ void				*try_alloc_tinysmall_block(size_t size)
 
 	if (size <= TINY_BLOCK_SIZE)
 	{
-		if (!g_zones[TINY].blocks)
-			if (init_zone(&g_zones[TINY]))
-				if (g_zones[TINY].free_space >= size)
-					mem = try_alloc(&g_zones[TINY], size);
+		init_zone(&g_zones[TINY]);
+		mem = try_alloc(&g_zones[TINY], size);
 	}
 	if (!mem && size <= SMALL_BLOCK_SIZE)
 	{
-		if (!g_zones[SMALL].blocks)
-			if (init_zone(&g_zones[SMALL]))
-				if (g_zones[SMALL].free_space >= size)
-					mem = try_alloc(&g_zones[SMALL], size);
+		init_zone(&g_zones[SMALL]);
+		mem = try_alloc(&g_zones[SMALL], size);
 	}
 	return mem;
 }
