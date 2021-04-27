@@ -6,11 +6,11 @@ INCL = -I ../inc
 YELLOW = "\033[33m"
 NOCOLOR = "\033[0m"
 
-TESTS = malloc_test free_test realloc_test rlimit_test test1 test1 test2 test3 test4 test5 test6 test7
+TESTS = malloc_test free_test realloc_test test1 test2 test3 test4 test5 test6 test7
 
 all: $(TESTS)
 	@echo ${YELLOW}Running [$(TESTS)]${NOCOLOR}
-	@./run.sh $(TESTS)
+	@./run_tests.sh $(TESTS)
 
 clean:
 	@echo ${YELLOW}Cleaning $(TESTS)${NOCOLOR}
