@@ -6,7 +6,7 @@
 #    By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/25 18:38:50 by vsokolog          #+#    #+#              #
-#    Updated: 2021/04/23 15:41:18 by vsokolog         ###   ########.fr        #
+#    Updated: 2021/04/26 15:39:32 by vsokolog         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,13 +46,13 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c $(DEPS) $(LIBFT)
 	@$(CC) $(CFLAGS) $(INCL) -c -o $@ $<
 
 clean:
-	@echo ${YELLOW}Cleaning $(OBJDIR) ${NOCOLOR}
+	@echo ${YELLOW}Cleaning $(OBJDIR)/*.o ${NOCOLOR}
 	@rm -rf $(OBJDIR)
 	@make clean -C test
 
 fclean: clean
-	@echo ${YELLOW}Cleaning $(PREFIX).so $(NAME) ${NOCOLOR}
-	@rm -f $(PREFIX).so
+	@echo ${YELLOW}Cleaning *.so $(NAME) ${NOCOLOR}
+	@rm -f *.so
 	@rm -f $(NAME)
 
 re: fclean all
