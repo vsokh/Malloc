@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:15 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/22 20:33:19 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/26 12:36:08 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,13 @@ static void			*move_block(t_meta_data *block, size_t size)
 		if (!dst_ptr)
 			return NULL;
 
-		size_t src_size = datasize(block);
-		ft_memcpy(dst_ptr, src_ptr, src_size);
-		free(src_ptr);
+		if (pthread_mutex_lock(&g_mtx) == 0)
+		{
+			size_t src_size = datasize(block);
+			ft_memcpy(dst_ptr, src_ptr, src_size);
+			pthread_mutex_unlock(&g_mtx);
+			free(src_ptr);
+		}
 	}
 	return dst_ptr;
 }
