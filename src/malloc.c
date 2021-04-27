@@ -6,34 +6,16 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:22 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/22 19:17:53 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/27 13:49:27 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malloc.h"
 
 t_zone				g_zones[ZONE_NUM] = {
-	[TINY] = {
-		.blocks = NULL,
-		.name   = "TINY",
-		.block_size = TINY_BLOCK_SIZE,
-		.heads_num  = TINY_HEADS_NUM,
-		.free_space = TINY_ZONE_SIZE
-	},
-	[SMALL] = {
-		.blocks = NULL,
-		.name   = "SMALL",
-		.block_size = SMALL_BLOCK_SIZE,
-		.heads_num  = SMALL_HEADS_NUM,
-		.free_space = SMALL_ZONE_SIZE
-	},
-	[LARGE] = {
-		.blocks = NULL,
-		.name   = "LARGE",
-		.block_size = 0,
-		.heads_num  = LARGE_HEADS_NUM,
-		.free_space = 0
-	}
+	[TINY]  = {NULL, "TINY", TINY_BLOCK_SIZE, TINY_HEADS_NUM, TINY_ZONE_SIZE},
+	[SMALL] = {NULL, "SMALL", SMALL_BLOCK_SIZE, SMALL_HEADS_NUM, SMALL_ZONE_SIZE},
+	[LARGE] = {NULL, "LARGE", 0, LARGE_HEADS_NUM, 0}
 };
 
 pthread_mutex_t		g_mtx = PTHREAD_MUTEX_INITIALIZER;
