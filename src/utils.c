@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:08 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/27 14:04:13 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/27 15:43:42 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,8 +183,4 @@ void			show_alloc_mem(void)
 		ft_putnbr(bytes);
 		ft_putstr(" bytes\n");
 	}
-}
-void			print_block(t_meta_data *b)
-{
-	printf("%p<-[%p]->%p; size: %zu inuse: %zu\n", b->prev, b, b->next, b->size, b->inuse);
 }
