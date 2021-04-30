@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:08 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/27 15:43:42 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/04/30 10:08:12 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,26 +161,31 @@ static size_t	print_zone(t_zone *zone)
 
 void			show_alloc_mem(void)
 {
-	t_zone *sorted[ZONE_NUM];
-	for (int i = 0; i < ZONE_NUM; i++)
-		sorted[i] = &g_zones[i];
-	sortp((void**)sorted, ZONE_NUM, cmp);
 
-	size_t bytes = 0;
-	for (int i = 0; i < ZONE_NUM; i++)
+	if (pthread_mutex_lock(&g_mtx) == 0)
 	{
-		if (sorted[i]->blocks != NULL)
+		t_zone *sorted[ZONE_NUM];
+		for (int i = 0; i < ZONE_NUM; i++)
+			sorted[i] = &g_zones[i];
+		sortp((void**)sorted, ZONE_NUM, cmp);
+
+		size_t bytes = 0;
+		for (int i = 0; i < ZONE_NUM; i++)
 		{
-			print_head(sorted[i]);
-			bytes += print_zone(sorted[i]);
+			if (sorted[i]->blocks != NULL)
+			{
+				print_head(sorted[i]);
+				bytes += print_zone(sorted[i]);
+			}
 		}
-	}
 
-	if (bytes > 0)
-	{
-		ft_putstr("Total");
-		ft_putstr(" : ");
-		ft_putnbr(bytes);
-		ft_putstr(" bytes\n");
+		if (bytes > 0)
+		{
+			ft_putstr("Total");
+			ft_putstr(" : ");
+			ft_putnbr(bytes);
+			ft_putstr(" bytes\n");
+		}
+		pthread_mutex_unlock(&g_mtx);
 	}
 }
