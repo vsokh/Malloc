@@ -1,4 +1,5 @@
 #include "../inc/malloc.h"
+#include <stdio.h>
 #include <limits.h>
 #include <pthread.h>
 
@@ -53,7 +54,6 @@ int main(void)
 
 	if (bad_inputs_malloc())
 		return 1;
-	show_alloc_mem();
 
 	return 0;
 }

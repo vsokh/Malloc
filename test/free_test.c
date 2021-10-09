@@ -1,4 +1,5 @@
 #include "../inc/malloc.h"
+#include <pthread.h>
 
 void free_test(int s, int n)
 {
@@ -53,17 +54,16 @@ int main(void)
 {
 	free_test(1, TINY_HEADS_NUM);
 	free_test(TINY_DATA_SIZE+1, SMALL_HEADS_NUM);
-	free_test(SMALL_DATA_SIZE+1, K);
+	/* free_test(SMALL_DATA_SIZE+1, K); */
 
-	pthread_t t[ZONE_NUM];
-	pthread_create(&t[TINY], NULL, tiny_cb, NULL);
-	pthread_create(&t[SMALL], NULL, small_cb, NULL);
-	pthread_create(&t[LARGE], NULL, large_cb, NULL);
+/* 	pthread_t t[ZONE_NUM]; */
+/* 	pthread_create(&t[TINY], NULL, tiny_cb, NULL); */
+/* 	pthread_create(&t[SMALL], NULL, small_cb, NULL); */
+/* 	pthread_create(&t[LARGE], NULL, large_cb, NULL); */
 
-	pthread_join(t[TINY], NULL);
-	pthread_join(t[SMALL], NULL);
-	pthread_join(t[LARGE], NULL);
+/* 	pthread_join(t[TINY], NULL); */
+/* 	pthread_join(t[SMALL], NULL); */
+/* 	pthread_join(t[LARGE], NULL); */
 
-	show_alloc_mem();
 	return 0;
 }

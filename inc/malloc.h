@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:30 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/27 15:36:48 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/10/09 19:22:10 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,12 @@
 
 # include <unistd.h>
 
+# include <stdint.h>
+
+# include <stdio.h>
+
 # define MIN_SIZE				(2 * sizeof(size_t))
-# define PAGE_SIZE 				(getpagesize())
+# define PAGE_SIZE 				((size_t)getpagesize())
 
 # define TINY_DATA_SIZE			128
 # define SMALL_DATA_SIZE		1024
@@ -52,7 +56,7 @@
 	(minsize(x) + BLOCK_METADATA_SIZE)
 
 # define head_at(zone, idx)			\
-	((zone->blocks) ? ((void*)((char*)(zone)->blocks + (zone)->block_size * idx)) : NULL)
+	((zone->blocks) ? ((void*)((char*)(zone)->blocks) + ((zone)->block_size * idx)) : NULL)
 
 # define block2mem(block)			\
 	((block) ? ((void*)((char*)(block) + BLOCK_METADATA_SIZE)) : NULL)
@@ -62,6 +66,19 @@
 
 # define datasize(block)			\
 	((block) ? ((block)->size - BLOCK_METADATA_SIZE) : 0)
+
+# define IS_INUSE 0x1
+# define IS_FIRST 0x2
+# define IS_LAST 0x4
+
+# define is_inuse(block)			\
+	((block) ? (block->flags & IS_INUSE) : 0)
+
+# define is_first(block)			\
+	((block) ? (block->flags & IS_FIRST) : 0)
+
+# define is_last(block)				\
+	((block) ? (block->flags & IS_LAST) : 0)
 
 typedef enum
 {
@@ -73,7 +90,7 @@ typedef struct			s_meta_data
 	struct s_meta_data	*prev;
 	struct s_meta_data	*next;
 
-	size_t				inuse;
+	size_t				flags;
 	size_t				size;
 }						t_meta_data;
 
@@ -86,7 +103,7 @@ typedef struct			s_zone
 	size_t				free_space;
 }						t_zone;
 
-extern t_zone			g_zones[ZONE_NUM];
+extern t_zone			g_zones[];
 extern pthread_mutex_t	g_mtx;
 
 void					free(void *ptr);
@@ -106,9 +123,13 @@ void					try_free_large_block(void *ptr);
 void					show_alloc_mem(void);
 
 
+void					ft_putnbr(size_t n);
+void					ft_putnbr16(unsigned long long n);
+
 void					ft_putstr(char const *s);
 int						ft_strlen(char const *s);
 void					ft_strcpy(char *dest, char const *src);
 void					*ft_memcpy(void *dest, const void *src, size_t n);
+void					ft_bzero(void *p, size_t size);
 
 #endif

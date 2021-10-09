@@ -1,5 +1,6 @@
-#include "../inc/malloc.h"
+#include <stdlib.h>
 
+void show_alloc_mem();
 int main()
 {
 	(void)malloc(1024);
@@ -7,7 +8,7 @@ int main()
 	(void)malloc(1024 * 1024);
 	(void)malloc(1024 * 1024 * 16);
 	(void)malloc(1024 * 1024 * 128);
-	show_alloc_mem();
+	/* show_alloc_mem(); */
 
 	return (0);
 }

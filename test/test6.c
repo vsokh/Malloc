@@ -1,6 +1,6 @@
 #include <unistd.h>
 #include <string.h>
-#include "../inc/malloc.h"
+#include <stdlib.h>
 
 void print(char *s)
 {
@@ -16,5 +16,4 @@ int main()
 	free((void *)addr + 5);
 	if (realloc((void *)addr + 5, 10) == NULL)
 		print("Bonjours\n");
-	show_alloc_mem();
 }

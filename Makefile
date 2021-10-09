@@ -6,13 +6,9 @@
 #    By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/25 18:38:50 by vsokolog          #+#    #+#              #
-#    Updated: 2021/04/26 15:39:32 by vsokolog         ###   ########.fr        #
+#    Updated: 2021/07/08 17:19:05 by vsokolog         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -fPIC
-LDFLAGS = -shared
 
 INCL = -I inc
 DEPS = inc/malloc.h
@@ -28,6 +24,10 @@ endif
 PREFIX = libft_malloc
 NAME = $(PREFIX)_$(HOSTTYPE).so
 
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -fPIC
+LDFLAGS = -shared
+
 RED = "\033[0;31m"
 YELLOW = "\033[33m"
 GREEN = "\033[0;32m"
@@ -36,7 +36,7 @@ NOCOLOR = "\033[0m"
 all: $(NAME)
 
 $(NAME): $(DEPS) $(OBJ)
-	@$(CC) $(LDFLAGS) $(INCL) -o $@ $(OBJ)
+	@$(CC) $(LDFLAGS) $(INCL) -o $@ $(OBJ) -install_name $(abspath $(NAME))
 	@ln -sf $(NAME) $(PREFIX).so
 	@echo ${GREEN}$(NAME) has compiled successfully!${NOCOLOR}
 

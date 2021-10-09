@@ -1,5 +1,6 @@
-#include <strings.h>
-#include "../inc/malloc.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
 #define M (1024 * 1024)
 
@@ -19,6 +20,5 @@ int main()
 	addr3 = (char*)realloc(addr1, 128*M);
 	addr3[127*M] = 42;
 	print(addr3);
-	show_alloc_mem();
 	return (0);
 }

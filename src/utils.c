@@ -6,18 +6,27 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:08 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/30 10:08:12 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/07/08 21:18:23 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "malloc.h"
+
+void			ft_bzero(void *p, size_t size)
+{
+	if (p == NULL)
+		return;
+
+	for (size_t i = 0; i < size; ++i)
+		((char*)p)[i]=0;
+}
 
 static void		ft_putchar(char c)
 {
 	write(1, &c, 1);
 }
 
-static void		ft_putnbr(size_t n)
+void			ft_putnbr(size_t n)
 {
 	if (n > 9)
 	{
@@ -66,7 +75,7 @@ void			ft_putstr(char const *s)
 	write(1, s, ft_strlen(s));
 }
 
-static void		ft_putnbr16(unsigned long long n)
+void			ft_putnbr16(unsigned long long n)
 {
 	const char *pref = "0x";
 	int b = 16;
@@ -126,7 +135,7 @@ static size_t	print_blocks(t_meta_data *head)
 	size_t bytes = 0;
 	t_meta_data *block = head;
 	do {
-		if (block->inuse)
+		if (block->flags)
 		{
 			size_t allocated = datasize(block);
 			uintptr_t start = (uintptr_t)block2mem(block);
@@ -161,7 +170,6 @@ static size_t	print_zone(t_zone *zone)
 
 void			show_alloc_mem(void)
 {
-
 	if (pthread_mutex_lock(&g_mtx) == 0)
 	{
 		t_zone *sorted[ZONE_NUM];

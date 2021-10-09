@@ -6,7 +6,7 @@
 /*   By: vsokolog <vsokolog@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/15 15:27:15 by vsokolog          #+#    #+#             */
-/*   Updated: 2021/04/26 12:36:08 by vsokolog         ###   ########.fr       */
+/*   Updated: 2021/07/08 16:29:16 by vsokolog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static t_meta_data	*search_in_zone(t_zone *zone, void *ptr)
 
 static void			*move_block(t_meta_data *block, size_t size)
 {
-	if (!block || !block->inuse)
+	if (!block || !block->flags)
 		return NULL;
 
 	void *src_ptr = block2mem(block);
