@@ -1,11 +1,6 @@
-.*.swp
-*.o
-*.dSYM
-test/*.dSYM
+*
+!src/
+!src/*.c
 
-a.out
-.DS_Store
-
-.todo
-tags
-.idea/
+!inc/
+!inc/*.h
